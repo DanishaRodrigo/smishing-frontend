@@ -110,21 +110,41 @@ public class LoginActivity extends AppCompatActivity {
 
         // Handle login button click
         loginButton.setOnClickListener(v -> {
+
+            loadingProgressBar.setVisibility(View.VISIBLE);
+
             String input = passwordEditText.getText().toString();
+            String email = usernameEditText.getText().toString();
+
             if (isPinLogin) {
-                // Handle PIN login
+                if (input.isEmpty()) {
+                    passwordEditText.setError("PIN cannot be empty");
+                    return;
+                }
+
                 if (input.length() != 6) {
                     passwordEditText.setError("PIN must be 6 digits");
                     return;
                 }
+
                 loginWithPin(input);
+
             } else {
-                // Handle password login
-                String email = usernameEditText.getText().toString();
-                if (email.isEmpty() || input.isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Email and Password must not be empty", Toast.LENGTH_SHORT).show();
+                if (email.isEmpty()) {
+                    usernameEditText.setError("Email required");
                     return;
                 }
+
+                if (input.isEmpty()) {
+                    passwordEditText.setError("Password required");
+                    return;
+                }
+
+                if (input.length() < 6) {
+                    passwordEditText.setError("Password must be at least 6 characters");
+                    return;
+                }
+
                 loginWithPassword(email, input);
             }
         });
@@ -256,6 +276,8 @@ public class LoginActivity extends AppCompatActivity {
     private void loginWithPin(String pin) {
         // For testing purposes, simulate a successful PIN login
         Toast.makeText(LoginActivity.this, "PIN verified successfully (bypassed for testing)", Toast.LENGTH_SHORT).show();
+
+        binding.progressbar.setVisibility(View.GONE);
         navigateToMainActivity();
     }
 
@@ -281,6 +303,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginWithPassword(String email, String password) {
         // For testing purposes, simulate a successful login
         Toast.makeText(LoginActivity.this, "Login successful (bypassed for testing)", Toast.LENGTH_SHORT).show();
+        binding.progressbar.setVisibility(View.GONE);
         navigateToMainActivity();
     }
 
