@@ -3,13 +3,16 @@ package com.example.smishingdetectionapp.ui.login;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -50,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
     private Retrofitinterface retrofitinterface;
     private String BASE_URL = BuildConfig.SERVERIP;
 
+    private int loginAttempts = 0;
+
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
     private boolean isPinLogin = false;  // Flag for PIN login
@@ -83,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText usernameEditText = binding.email;
         final EditText passwordEditText = binding.password;
         final Button loginButton = binding.loginButton;
+        final CheckBox rememberMe = binding.rememberMeCheckbox;
         final ProgressBar loadingProgressBar = binding.progressbar;
         final SignInButton googleBtn = binding.googleBtn;
         final Button registerButton = binding.registerButton;
@@ -111,19 +117,31 @@ public class LoginActivity extends AppCompatActivity {
         // Handle login button click
         loginButton.setOnClickListener(v -> {
 
+            if (loginAttempts >= 3) {
+                Toast.makeText(this, "Too many attempts. Try again later.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             loadingProgressBar.setVisibility(View.VISIBLE);
+
+            loginButton.setEnabled(false);
+
 
             String input = passwordEditText.getText().toString();
             String email = usernameEditText.getText().toString();
 
             if (isPinLogin) {
                 if (input.isEmpty()) {
-                    passwordEditText.setError("PIN cannot be empty");
+                    passwordEditText.setError("Please enter your PIN");
+                    loginAttempts++;
+                    loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (input.length() != 6) {
-                    passwordEditText.setError("PIN must be 6 digits");
+                    passwordEditText.setError("PIN must be exactly 6 digits");
+                    loginAttempts++;
+                    loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
 
@@ -131,17 +149,30 @@ public class LoginActivity extends AppCompatActivity {
 
             } else {
                 if (email.isEmpty()) {
-                    usernameEditText.setError("Email required");
+                    usernameEditText.setError("Email is required");
+                    loginAttempts++;
+                    loadingProgressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (!email.contains("@")) {
+                    usernameEditText.setError("Enter a valid email");
+                    loginAttempts++;
+                    loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (input.isEmpty()) {
-                    passwordEditText.setError("Password required");
+                    passwordEditText.setError("Please enter your password");
+                    loginAttempts++;
+                    loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (input.length() < 6) {
                     passwordEditText.setError("Password must be at least 6 characters");
+                    loginAttempts++;
+                    loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
 
@@ -274,9 +305,21 @@ public class LoginActivity extends AppCompatActivity {
      */
 
     private void loginWithPin(String pin) {
-        // For testing purposes, simulate a successful PIN login
-        Toast.makeText(LoginActivity.this, "PIN verified successfully (bypassed for testing)", Toast.LENGTH_SHORT).show();
 
+        SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        if (binding.rememberMeCheckbox.isChecked()) {
+            editor.putBoolean("isLoggedIn", true);
+        } else {
+            editor.putBoolean("isLoggedIn", false);
+        }
+
+        editor.putLong("loginTime", System.currentTimeMillis());
+
+        editor.apply();
+
+        Toast.makeText(LoginActivity.this, "PIN login successful", Toast.LENGTH_SHORT).show();
         binding.progressbar.setVisibility(View.GONE);
         navigateToMainActivity();
     }
@@ -301,8 +344,25 @@ public class LoginActivity extends AppCompatActivity {
      */
 
     private void loginWithPassword(String email, String password) {
-        // For testing purposes, simulate a successful login
-        Toast.makeText(LoginActivity.this, "Login successful (bypassed for testing)", Toast.LENGTH_SHORT).show();
+
+        SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        // ✅ FIX 1: handle both cases
+        if (binding.rememberMeCheckbox.isChecked()) {
+            editor.putBoolean("isLoggedIn", true);
+        } else {
+            editor.putBoolean("isLoggedIn", false);
+        }
+
+        editor.putString("userEmail", email);
+
+        // ✅ FIX 2: save login time BEFORE apply
+        editor.putLong("loginTime", System.currentTimeMillis());
+
+        editor.apply(); // ✅ apply at the END
+
+        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
         binding.progressbar.setVisibility(View.GONE);
         navigateToMainActivity();
     }
@@ -321,23 +381,49 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<DBresult> call, Response<DBresult> response) {
                 if (response.code() == 200) {
+
+                    SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    if (binding.rememberMeCheckbox.isChecked()) {
+                        editor.putBoolean("isLoggedIn", true);
+                    } else {
+                        editor.putBoolean("isLoggedIn", false);
+                    }
+
+                    editor.putString("userEmail", binding.email.getText().toString());
+                    editor.putLong("loginTime", System.currentTimeMillis());
+                    editor.apply();
+
+                    Toast.makeText(LoginActivity.this, "Login successful (API)", Toast.LENGTH_SHORT).show();
+
                     navigateToMainActivity();
-                } else if (response.code() == 404) {
-                    Toast.makeText(LoginActivity.this, "Wrong Credentials", Toast.LENGTH_LONG).show();
+
+                } else {
+                    Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<DBresult> call, Throwable throwable) {
-                Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();
-                navigateToMainActivity();
+                Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_LONG).show();                navigateToMainActivity();
             }
         });
     }
 
     private boolean isUserLoggedIn() {
-        // Placeholder for checking login state
-        return false;
+        SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+
+        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+        long loginTime = prefs.getLong("loginTime", 0);
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - loginTime > 600000) { // 10 minutes
+            prefs.edit().clear().apply();
+            return false;
+        }
+
+        return isLoggedIn;
     }
 
     private void navigateToMainActivity() {

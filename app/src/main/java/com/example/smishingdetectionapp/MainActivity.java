@@ -2,6 +2,7 @@ package com.example.smishingdetectionapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.Button;
@@ -34,6 +35,13 @@ public class MainActivity extends SharedActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        TextView welcomeText = findViewById(R.id.welcomeText);
+
+        SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        String email = prefs.getString("userEmail", "User");
+
+        welcomeText.setText("Welcome, " + email);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_news, R.id.nav_settings)
                 .build();
@@ -75,6 +83,24 @@ public class MainActivity extends SharedActivity {
         Button learnMoreButton = findViewById(R.id.learn_more_btn);
         learnMoreButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, EducationActivity.class);
+            startActivity(intent);
+        });
+
+        Button logoutBtn = findViewById(R.id.logoutBtn);
+
+        logoutBtn.setOnClickListener(v -> {
+
+            // clear saved session
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.clear();
+            editor.apply();
+
+            // go to login screen
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+
+            // 🔥 VERY IMPORTANT (prevents going back)
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
             startActivity(intent);
         });
 
