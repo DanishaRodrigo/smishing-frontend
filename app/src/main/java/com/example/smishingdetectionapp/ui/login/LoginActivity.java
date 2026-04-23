@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.content.SharedPreferences;
-
+import com.example.smishingdetectionapp.UserRiskManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -117,14 +117,24 @@ public class LoginActivity extends AppCompatActivity {
         // Handle login button click
         loginButton.setOnClickListener(v -> {
 
-            if (loginAttempts >= 3) {
-                Toast.makeText(this, "Too many attempts. Try again later.", Toast.LENGTH_LONG).show();
-                return;
+            if (UserRiskManager.isRapidClick()) {
+                Toast.makeText(this, "⚠️ Too fast! Suspicious activity", Toast.LENGTH_SHORT).show();
+            }
+
+            //  Block high-risk users
+            int score = UserRiskManager.getRiskScore(this);
+
+            if (score >= 3) {
+                Toast.makeText(this, "⚠️ HIGH RISK detected!", Toast.LENGTH_LONG).show();
+            } else if (score == 2) {
+                Toast.makeText(this, "⚠️ MEDIUM RISK detected!", Toast.LENGTH_LONG).show();
             }
 
             loadingProgressBar.setVisibility(View.VISIBLE);
 
             loginButton.setEnabled(false);
+
+            binding.loginButton.setEnabled(true);
 
 
             String input = passwordEditText.getText().toString();
@@ -134,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (input.isEmpty()) {
                     passwordEditText.setError("Please enter your PIN");
                     loginAttempts++;
+                    UserRiskManager.recordFailedLogin(this);
                     loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -141,6 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (input.length() != 6) {
                     passwordEditText.setError("PIN must be exactly 6 digits");
                     loginAttempts++;
+                    UserRiskManager.recordFailedLogin(this);
                     loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -151,6 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (email.isEmpty()) {
                     usernameEditText.setError("Email is required");
                     loginAttempts++;
+                    UserRiskManager.recordFailedLogin(this);
                     loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -158,6 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (!email.contains("@")) {
                     usernameEditText.setError("Enter a valid email");
                     loginAttempts++;
+                    UserRiskManager.recordFailedLogin(this);
                     loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -165,6 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (input.isEmpty()) {
                     passwordEditText.setError("Please enter your password");
                     loginAttempts++;
+                    UserRiskManager.recordFailedLogin(this);
                     loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -172,6 +187,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (input.length() < 6) {
                     passwordEditText.setError("Password must be at least 6 characters");
                     loginAttempts++;
+                    UserRiskManager.recordFailedLogin(this);
                     loadingProgressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -348,7 +364,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        // ✅ FIX 1: handle both cases
+        // FIX 1: handle both cases
         if (binding.rememberMeCheckbox.isChecked()) {
             editor.putBoolean("isLoggedIn", true);
         } else {
@@ -357,10 +373,10 @@ public class LoginActivity extends AppCompatActivity {
 
         editor.putString("userEmail", email);
 
-        // ✅ FIX 2: save login time BEFORE apply
+        // FIX 2: save login time BEFORE apply
         editor.putLong("loginTime", System.currentTimeMillis());
 
-        editor.apply(); // ✅ apply at the END
+        editor.apply(); // apply at the END
 
         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
         binding.progressbar.setVisibility(View.GONE);

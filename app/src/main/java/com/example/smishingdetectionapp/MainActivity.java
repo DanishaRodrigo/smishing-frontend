@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.TextView;
 import android.os.Handler;
+import com.example.smishingdetectionapp.UserRiskManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
@@ -35,6 +36,18 @@ public class MainActivity extends SharedActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        TextView riskText = findViewById(R.id.riskText);
+
+        int score = UserRiskManager.getRiskScore(this);
+
+        if (score >= 3) {
+            riskText.setText("HIGH RISK ⚠️");
+        } else if (score == 2) {
+            riskText.setText("MEDIUM RISK");
+        } else {
+            riskText.setText("LOW RISK ✅");
+        }
 
         TextView welcomeText = findViewById(R.id.welcomeText);
 
