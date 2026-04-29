@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,65 +57,50 @@ public class SettingsActivity extends AppCompatActivity {
             return false;
         });
 
-        // Account button to switch to account page with biometric authentication
-        Button accountBtn = findViewById(R.id.accountBtn);
-        accountBtn.setOnClickListener(v -> triggerBiometricAuthenticationWithTimeout());
+        LinearLayout account = findViewById(R.id.accountCard);
+        LinearLayout notif = findViewById(R.id.notificationsCard);
+        LinearLayout filter = findViewById(R.id.filterCard);
+        LinearLayout report = findViewById(R.id.reportCard);
+        LinearLayout help = findViewById(R.id.helpCard);
+        LinearLayout chat = findViewById(R.id.chatCard);
 
-        //Filtering button to switch to Smishing rules page
-        Button filteringBtn = findViewById(R.id.filteringBtn);
-        filteringBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, SmishingRulesActivity.class));
-            finish();
+// ACCOUNT
+        account.setOnClickListener(v -> {
+            animateCard(v);
+            triggerBiometricAuthenticationWithTimeout();
         });
 
-        // Report button to switch to reporting page
-        Button reportBtn = findViewById(R.id.reportBtn);
-        reportBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, ReportingActivity.class));
-            finish();
-        });
-        //Notification button to switch to notification page
-
-        // Help button to switch to Help page
-        Button helpBtn = findViewById(R.id.helpBtn);
-        helpBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, HelpActivity.class));
-            finish();
+// NOTIFICATIONS
+        notif.setOnClickListener(v -> {
+            animateCard(v);
+            startActivity(new Intent(SettingsActivity.this, NotificationActivity.class));
         });
 
-        // About Me button to switch to AboutMeActivity
-        Button aboutMeButton = findViewById(R.id.aboutMeBtn);
-        aboutMeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, AboutMeActivity.class);
-            startActivity(intent);
+// FILTER
+        filter.setOnClickListener(v -> {
+            animateCard(v);
+            startActivity(new Intent(SettingsActivity.this, SmishingRulesActivity.class));
+        });
+
+// REPORT
+        report.setOnClickListener(v -> {
+            animateCard(v);
+            startActivity(new Intent(SettingsActivity.this, ReportingActivity.class));
+        });
+
+// HELP
+        help.setOnClickListener(v -> {
+            animateCard(v);
+            startActivity(new Intent(SettingsActivity.this, HelpActivity.class));
+        });
+
+//CHAT
+        chat.setOnClickListener(v -> {
+            animateCard(v);
+            startActivity(new Intent(SettingsActivity.this, ChatAssistantActivity.class));
         });
 
 
-
-        Button aboutUsBtn = findViewById(R.id.aboutUsBtn);
-        aboutUsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, AboutUsActivity.class);
-            startActivity(intent);
-        });
-
-        Button chatAssistantBtn = findViewById(R.id.chatAssistantBtn);
-        chatAssistantBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, ChatAssistantActivity.class);
-            startActivity(intent);
-        });
-
-        //Feedback Button to switch to Feedback page
-        Button feedbackBtn = findViewById(R.id.feedbackBtn);
-        feedbackBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, FeedbackActivity.class));
-            finish();
-        });
-        //Forum Button to switch to Forum page
-        Button forumBtn = findViewById(R.id.forumBtn);
-        forumBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, ForumActivity.class));
-            finish();
-        });
     }
     // Trigger biometric authentication with timeout
     private void triggerBiometricAuthenticationWithTimeout() {
@@ -196,6 +182,19 @@ public class SettingsActivity extends AppCompatActivity {
     public void openNotificationsActivity(View view) {
         Intent intent = new Intent(this, NotificationActivity.class);
         startActivity(intent);
+    }
+
+    private void animateCard(View v) {
+        v.animate()
+                .scaleX(0.95f)
+                .scaleY(0.95f)
+                .setDuration(100)
+                .withEndAction(() ->
+                        v.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(100)
+                );
     }
 }
 

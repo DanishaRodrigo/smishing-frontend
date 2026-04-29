@@ -16,4 +16,13 @@
     <color name="azure">#F0FFFF</color>
     <color name="red">#FFFF0000</color>
  <color name="cream">#F5EDD6</color>
+
+ <color name="risk_high">#D32F2F</color>
+ <color name="risk_medium">#F57C00</color>
+ <color name="risk_low">#388E3C</color>
+
+ <color name="card_bg">#E3F2FD</color>
+ <color name="primary_blue">#1976D2</color>
+ <color name="soft_gray">#F5F5F5</color>
+
 </resources>

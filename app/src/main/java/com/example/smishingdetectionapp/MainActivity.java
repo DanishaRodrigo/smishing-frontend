@@ -42,11 +42,11 @@ public class MainActivity extends SharedActivity {
         int score = UserRiskManager.getRiskScore(this);
 
         if (score >= 3) {
-            riskText.setText("HIGH RISK ⚠️");
+            riskText.setText("HIGH RISK ⚠");
         } else if (score == 2) {
             riskText.setText("MEDIUM RISK");
         } else {
-            riskText.setText("LOW RISK ✅");
+            riskText.setText("LOW RISK ");
         }
 
         TextView welcomeText = findViewById(R.id.welcomeText);
@@ -55,6 +55,39 @@ public class MainActivity extends SharedActivity {
         String email = prefs.getString("userEmail", "User");
 
         welcomeText.setText("Welcome, " + email);
+
+        // 🔥 STEP 4 — SECURITY INSIGHTS (ADD HERE)
+
+        TextView attemptText = findViewById(R.id.attemptText);
+        TextView timeText = findViewById(R.id.timeText);
+        TextView adviceText = findViewById(R.id.adviceText);
+
+// Get failed attempts
+        SharedPreferences riskPrefs = getSharedPreferences("RiskPrefs", MODE_PRIVATE);
+        int attempts = riskPrefs.getInt("failedAttempts", 0);
+        attemptText.setText("Failed Attempts: " + attempts);
+
+// Get login time
+        long time = prefs.getLong("loginTime", 0);
+        timeText.setText("Last Login: " + new java.util.Date(time).toString());
+
+// Advice based on risk
+        if (score >= 3) {
+            riskText.setText("🔴 HIGH RISK");
+            riskText.setTextColor(getResources().getColor(R.color.risk_high));
+        } else if (score == 2) {
+            riskText.setText("🟠 MEDIUM RISK");
+            riskText.setTextColor(getResources().getColor(R.color.risk_medium));
+        } else {
+            riskText.setText("🟢 LOW RISK");
+            riskText.setTextColor(getResources().getColor(R.color.risk_low));
+        }
+
+        riskText.setAlpha(0f);
+        riskText.animate()
+                .alpha(1f)
+                .setDuration(800)
+                .start();
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_news, R.id.nav_settings)
                 .build();
@@ -88,9 +121,21 @@ public class MainActivity extends SharedActivity {
                 startActivity(new Intent(MainActivity.this, DebugActivity.class)));
 
         Button detections_btn = findViewById(R.id.detections_btn);
+
         detections_btn.setOnClickListener(v -> {
-            startActivity(new Intent(this, DetectionsActivity.class));
-            finish();
+            v.animate()
+                    .scaleX(0.95f)
+                    .scaleY(0.95f)
+                    .setDuration(100)
+                    .withEndAction(() -> {
+                        v.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(100);
+
+                        startActivity(new Intent(MainActivity.this, DetectionsActivity.class));
+                        finish();
+                    });
         });
 
         Button learnMoreButton = findViewById(R.id.learn_more_btn);
