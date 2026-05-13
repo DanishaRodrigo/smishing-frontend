@@ -38,6 +38,9 @@
             android:paddingEnd="125dp"
             android:text="@string/detectionsBtn"
             android:textSize="20sp"
+            android:elevation="6dp"
+            android:textStyle="bold"
+            android:foreground="?attr/selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -45,8 +48,8 @@
 
         <ImageView
             android:id="@+id/HardhatLogo"
-            android:layout_width="112dp"
-            android:layout_height="106dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
@@ -59,15 +62,29 @@
             android:id="@+id/DashboardText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="@string/app_name"
             android:textSize="32sp"
             android:textStyle="bold"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/HardhatLogo"
             android:textColor="@color/navy_blue"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/information_box"
+            android:layout_width="0dp"
+            android:layout_height="230dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="180dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/new_detections"
@@ -75,6 +92,7 @@
             android:layout_height="100dp"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="20dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/counter_buttons"
             app:layout_constraintBottom_toTopOf="@+id/detections_btn"
             app:layout_constraintStart_toStartOf="parent" />
@@ -85,25 +103,12 @@
             android:layout_height="100dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/counter_buttons"
             app:layout_constraintBottom_toTopOf="@+id/detections_btn"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/information_box"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/buttons_rounded"
-            app:layout_constraintBottom_toTopOf="@+id/new_detections"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+
 
         <TextView
             android:id="@+id/new_counter"
@@ -113,7 +118,7 @@
             android:layout_marginTop="4dp"
             android:text="0"
             android:textColor="#000000"
-            android:textSize="30dp"
+            android:textSize="30sp"
             app:layout_constraintStart_toStartOf="@+id/new_detections"
             app:layout_constraintTop_toTopOf="@+id/new_detections" />
 
@@ -125,7 +130,7 @@
             android:layout_marginTop="4dp"
             android:text="0"
             android:textColor="#000000"
-            android:textSize="30dp"
+            android:textSize="30sp"
             app:layout_constraintStart_toStartOf="@+id/total_detections"
             app:layout_constraintTop_toTopOf="@+id/total_detections" />
 
@@ -155,12 +160,13 @@
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="@+id/total_detections"
             app:layout_constraintTop_toTopOf="@+id/total_detections"
+
             app:srcCompat="@drawable/baseline_access_time_24"
             android:contentDescription="@string/time_icon"/>
 
@@ -179,10 +185,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="LOW RISK"
-            android:textSize="18sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_dark"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
 
             app:layout_constraintStart_toStartOf="@id/information_box"
             app:layout_constraintTop_toBottomOf="@id/information_text"/>
@@ -192,11 +199,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"
+            android:textSize="18sp"
+            android:textColor="@color/navy_blue"
+            android:textStyle="bold"
 
             app:layout_constraintStart_toStartOf="@id/information_box"
-            app:layout_constraintTop_toBottomOf="@id/riskText"/>
+            app:layout_constraintTop_toTopOf="@id/information_box"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="20dp"/>
 
         <TextView
             android:id="@+id/attemptText"
@@ -204,6 +214,7 @@
             android:layout_height="wrap_content"
             android:text="Failed Attempts: 0"
             android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
 
             app:layout_constraintStart_toStartOf="@id/information_box"
             app:layout_constraintTop_toBottomOf="@id/welcomeText"/>
@@ -214,9 +225,12 @@
             android:layout_height="wrap_content"
             android:text="Last Login: --"
             android:layout_marginTop="4dp"
+            android:layout_marginStart="20dp"
 
             app:layout_constraintStart_toStartOf="@id/information_box"
             app:layout_constraintTop_toBottomOf="@id/attemptText"/>
+
+
 
         <TextView
             android:id="@+id/adviceText"
@@ -224,6 +238,49 @@
             android:layout_height="wrap_content"
             android:text="Advice: Stay safe"
             android:layout_marginTop="4dp"
+            android:layout_marginStart="20dp"
+
+            app:layout_constraintStart_toStartOf="@id/information_box"
+            app:layout_constraintTop_toBottomOf="@id/timeText"/>
+
+        <TextView
+            android:id="@+id/activityTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recent Activity"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="@id/information_box"
+            app:layout_constraintTop_toBottomOf="@id/securityBadge"/>
+
+        <TextView
+            android:id="@+id/activityText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Last login successful&#10;• Failed attempts monitored&#10;• Risk monitoring active"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:lineSpacingExtra="6dp"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="@id/information_box"
+            app:layout_constraintTop_toBottomOf="@id/activityTitle"/>
+
+        <TextView
+            android:id="@+id/securityBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SECURE"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_green"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginTop="16dp"
 
             app:layout_constraintStart_toStartOf="@id/information_box"
             app:layout_constraintTop_toBottomOf="@id/timeText"/>
@@ -233,9 +290,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
+            android:textStyle="bold"
+            android:background="@drawable/buttons_rounded"
+            android:textColor="@color/navy_blue"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
 
             app:layout_constraintEnd_toEndOf="@id/information_box"
-            app:layout_constraintTop_toBottomOf="@id/riskText"/>
+            app:layout_constraintTop_toTopOf="@id/information_box"/>
 
         <ImageView
             android:id="@+id/imageView3"

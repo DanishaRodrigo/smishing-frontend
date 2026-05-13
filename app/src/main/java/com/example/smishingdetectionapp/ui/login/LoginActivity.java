@@ -132,6 +132,11 @@ public class LoginActivity extends AppCompatActivity {
 
             loadingProgressBar.setVisibility(View.VISIBLE);
 
+            loginButton.animate()
+                    .alpha(0.5f)
+                    .setDuration(200)
+                    .start();
+
             loginButton.setEnabled(false);
 
             binding.loginButton.setEnabled(true);

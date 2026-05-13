@@ -61,6 +61,8 @@ public class MainActivity extends SharedActivity {
         TextView attemptText = findViewById(R.id.attemptText);
         TextView timeText = findViewById(R.id.timeText);
         TextView adviceText = findViewById(R.id.adviceText);
+        TextView activityText = findViewById(R.id.activityText);
+        TextView securityBadge = findViewById(R.id.securityBadge);
 
 // Get failed attempts
         SharedPreferences riskPrefs = getSharedPreferences("RiskPrefs", MODE_PRIVATE);
@@ -75,19 +77,43 @@ public class MainActivity extends SharedActivity {
         if (score >= 3) {
             riskText.setText("🔴 HIGH RISK");
             riskText.setTextColor(getResources().getColor(R.color.risk_high));
+            //securityBadge.setText("DANGER");
+            //securityBadge.setBackgroundResource(R.drawable.badge_red);
         } else if (score == 2) {
             riskText.setText("🟠 MEDIUM RISK");
             riskText.setTextColor(getResources().getColor(R.color.risk_medium));
+            //securityBadge.setText("WARNING");
+            //securityBadge.setBackgroundResource(R.drawable.badge_orange);
         } else {
             riskText.setText("🟢 LOW RISK");
             riskText.setTextColor(getResources().getColor(R.color.risk_low));
+            //securityBadge.setText("SECURE");
+            //securityBadge.setBackgroundResource(R.drawable.badge_green);
         }
+
+        activityText.setText(
+                "• Last login successful\n" +
+                        "• Failed attempts: " + attempts + "\n" +
+                        "• Risk monitoring active"
+        );
 
         riskText.setAlpha(0f);
         riskText.animate()
                 .alpha(1f)
                 .setDuration(800)
                 .start();
+/*
+        TextView informationBox = findViewById(R.id.information_box);
+
+        informationBox.setAlpha(0f);
+
+        informationBox.animate()
+                .alpha(1f)
+                .setDuration(1000)
+                .start();
+
+                */
+
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_news, R.id.nav_settings)
                 .build();
@@ -134,6 +160,7 @@ public class MainActivity extends SharedActivity {
                                 .setDuration(100);
 
                         startActivity(new Intent(MainActivity.this, DetectionsActivity.class));
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                         finish();
                     });
         });
